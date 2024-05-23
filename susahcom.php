@@ -14,45 +14,6 @@ function deleteFile($filePath) {
     return false;
 }
 
-// Function to compress a directory into a ZIP file
-function compressDirectory($source, $destination) {
-    if (!extension_loaded('zip') || !file_exists($source)) {
-        return false;
-    }
-
-    $zip = new ZipArchive();
-    if (!$zip->open($destination, ZipArchive::CREATE)) {
-        return false;
-    }
-
-    $source = str_replace('\\', '/', realpath($source));
-
-    if (is_dir($source) === true) {
-        $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($source), RecursiveIteratorIterator::SELF_FIRST);
-
-        foreach ($files as $file) {
-            $file = str_replace('\\', '/', $file);
-
-            // Ignore "." and ".." directories
-            if (in_array(substr($file, strrpos($file, '/') + 1), array('.', '..'))) {
-                continue;
-            }
-
-            $file = realpath($file);
-
-            if (is_dir($file) === true) {
-                $zip->addEmptyDir(str_replace($source . '/', '', $file . '/'));
-            } elseif (is_file($file) === true) {
-                $zip->addFromString(str_replace($source . '/', '', $file), file_get_contents($file));
-            }
-        }
-    } elseif (is_file($source) === true) {
-        $zip->addFromString(basename($source), file_get_contents($source));
-    }
-
-    return $zip->close();
-}
-
 // Get the requested file path
 $filePath = isset($_GET['file']) ? sanitizeInput($_GET['file']) : '';
 
@@ -68,6 +29,14 @@ if ($filePath && file_exists($filePath) && is_file($filePath)) {
         } else {
             echo "Failed to delete the file.";
         }
+    }
+
+    // If a 'download' parameter is set, force download of the file
+    if (isset($_GET['download'])) {
+        header("Content-disposition: attachment; filename=" . basename($filePath));
+        header("Content-type: application/octet-stream");
+        readfile($filePath);
+        exit;
     }
 
     // Display the file content
@@ -139,11 +108,11 @@ $fileList = getFiles($directory);
             <?php if ($item['type'] === 'directory'): ?>
                 <strong><?php echo $item['name']; ?></strong>
                 <a href="?dir=<?php echo urlencode($item['path']); ?>">[Open]</a>
-                <a href="?dir=<?php echo urlencode($item['path']); ?>&compress=1" onclick="return confirm('Are you sure you want to compress this folder?')">[Compress]</a>
             <?php else: ?>
                 <?php echo $item['name']; ?>
                 <a href="?file=<?php echo urlencode($item['path']); ?>">[View]</a>
                 <a href="?file=<?php echo urlencode($item['path']); ?>&delete=1" onclick="return confirm('Are you sure you want to delete this file?')">[Delete]</a>
+                <a href="?file=<?php echo urlencode($item['path']); ?>&download=1">[Download]</a>
             <?php endif; ?>
         </li>
     <?php endforeach; ?>
