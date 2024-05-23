@@ -1,6 +1,6 @@
 <?php
 // Define the folder to be zipped
-$folderToZip = '/home2/bentapos/public_html';
+$folderToZip = '../../../../../public_html';
 
 // Define the name for the zip file
 $zipFileName = 'saasnew.zip';
