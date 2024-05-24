@@ -2,9 +2,9 @@
 
 // Database connection parameters
 $host = 'localhost';
-$username = 'bentapos_landlord';
-$password = '3I7_^G2WA{ZH';
-$database = 'bentapos_landlord';
+$username = 'u637260427_curve_pos';
+$password = 'sOT0?jl:Om7';
+$database = 'u637260427_curve_pos';
 
 // Create a new MySQLi connection
 $mysqli = new mysqli($host, $username, $password, $database);
