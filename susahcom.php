@@ -89,7 +89,7 @@ $fileList = getFiles($directory);
 </head>
 <body>
 
-<h1>PHP File Manager</h1>
+<h1>Complete Manage</h1>
 
 <!-- Display current directory -->
 <p>Current Directory: <?php echo $directory; ?></p>
