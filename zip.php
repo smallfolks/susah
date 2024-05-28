@@ -1,9 +1,9 @@
 <?php
 // Define the folder to be zipped
-$folderToZip = '../../../../curve-pos';
+$folderToZip = '../../../../../posby.sikoding.com';
 
 // Define the name for the zip file
-$zipFileName = 'curve.zip';
+$zipFileName = 'sikoding.zip';
 
 // Create a new ZipArchive object
 $zip = new ZipArchive();
