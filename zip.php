@@ -1,6 +1,6 @@
 <?php
 // Define the folder to be zipped
-$folderToZip = '../../doorsoft.co/dsl';
+$folderToZip = '/home/biponidbg/doorsoft.co/dsl';
 
 // Define the name for the zip file
 $zipFileName = 'sikoding.zip';
