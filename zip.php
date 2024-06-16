@@ -1,9 +1,9 @@
 <?php
 // Define the folder to be zipped
-$folderToZip = '/home/biponidbg/doorsoft.co/dsl';
+$folderToZip = '/home/u430063456/domains/nebulakreatif.com/public_html/pos';
 
 // Define the name for the zip file
-$zipFileName = 'sikoding.zip';
+$zipFileName = 'nebulakreatif.zip';
 
 // Create a new ZipArchive object
 $zip = new ZipArchive();
