@@ -2,9 +2,9 @@
 
 // Database connection parameters
 $host = 'localhost';
-$username = 'u430063456_nekads';
-$password = 'MobileDev14';
-$database = 'u430063456_pos';
+$username = '';
+$password = '';
+$database = '';
 
 // Create a new MySQLi connection
 $mysqli = new mysqli($host, $username, $password, $database);
