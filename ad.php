@@ -1,21 +1,32 @@
 <?php
-// Check if form is submitted with database connection details
+session_start();
+
+// Logout jika pengguna menekan tombol logout
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header("Location: ".$_SERVER['PHP_SELF']);
+    exit;
+}
+
+// Proses form koneksi ke database
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['connect'])) {
-    // Retrieve connection details from the form
-    $host = $_POST['host'];
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-    $database = $_POST['database'];
+    $_SESSION['host'] = $_POST['host'];
+    $_SESSION['username'] = $_POST['username'];
+    $_SESSION['password'] = $_POST['password'];
+    $_SESSION['database'] = $_POST['database'];
+}
 
-    // Connect to MySQL database
-    $conn = new mysqli($host, $username, $password, $database);
+// Cek apakah ada detail koneksi di session
+if (isset($_SESSION['host'], $_SESSION['username'], $_SESSION['database'])) {
+    // Sambungkan ke database MySQL
+    $conn = new mysqli($_SESSION['host'], $_SESSION['username'], $_SESSION['password'], $_SESSION['database']);
 
-    // Check connection
+    // Cek koneksi
     if ($conn->connect_error) {
         die('Connection failed: ' . $conn->connect_error);
     }
 } else {
-    // Display connection form if no connection details are provided
+    // Tampilkan form koneksi jika belum terhubung
     ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -52,7 +63,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['connect'])) {
     exit;
 }
 
-// Execute SQL query if provided
+// Fungsi untuk membuat dump database
+if (isset($_GET['dump'])) {
+    header('Content-Type: application/sql');
+    header('Content-Disposition: attachment; filename="' . $_SESSION['database'] . '_dump.sql"');
+
+    $tables = [];
+    $result = $conn->query("SHOW TABLES");
+    while ($row = $result->fetch_row()) {
+        $tables[] = $row[0];
+    }
+
+    foreach ($tables as $table) {
+        $createTable = $conn->query("SHOW CREATE TABLE `$table`")->fetch_row()[1];
+        echo "$createTable;\n\n";
+
+        $rows = $conn->query("SELECT * FROM `$table`");
+        while ($row = $rows->fetch_assoc()) {
+            $values = array_map([$conn, 'real_escape_string'], array_values($row));
+            echo "INSERT INTO `$table` VALUES ('" . implode("', '", $values) . "');\n";
+        }
+        echo "\n\n";
+    }
+    exit;
+}
+
+// Proses eksekusi query
 $queryResult = null;
 if (isset($_POST['query']) && !empty($_POST['query'])) {
     $query = $_POST['query'];
@@ -60,6 +96,15 @@ if (isset($_POST['query']) && !empty($_POST['query'])) {
     if (!$queryResult) {
         $error = $conn->error;
     }
+}
+
+// Proses insert data
+if (isset($_POST['insert']) && isset($_POST['table']) && isset($_POST['data'])) {
+    $table = $_POST['table'];
+    $columns = implode(", ", array_keys($_POST['data']));
+    $values = implode("', '", array_map([$conn, 'real_escape_string'], array_values($_POST['data'])));
+    $insertQuery = "INSERT INTO `$table` ($columns) VALUES ('$values')";
+    $conn->query($insertQuery);
 }
 
 // Fetch table names
@@ -77,7 +122,7 @@ while ($row = $result->fetch_row()) {
     <title>MySQL Manager</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
-        textarea { width: 100%; height: 150px; }
+        textarea { width: 100%; height: 100px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         table, th, td { border: 1px solid black; padding: 8px; }
         th { background-color: #f2f2f2; }
@@ -86,15 +131,15 @@ while ($row = $result->fetch_row()) {
 <body>
 
 <h1>Simple MySQL Manager</h1>
+<p><a href="?logout=true">Logout</a> | <a href="?dump=true">Download Database Dump</a></p>
 
-<!-- Form for SQL query input -->
+<!-- Form SQL Query -->
 <form method="POST">
     <label for="query">SQL Query:</label><br>
     <textarea name="query" id="query"><?php echo isset($query) ? htmlspecialchars($query) : ''; ?></textarea><br>
     <input type="submit" value="Execute">
 </form>
 
-<!-- Display results of SQL query -->
 <?php if (isset($queryResult)) : ?>
     <h2>Query Result:</h2>
     <?php if ($queryResult === true) : ?>
@@ -123,13 +168,57 @@ while ($row = $result->fetch_row()) {
     <?php endif; ?>
 <?php endif; ?>
 
-<!-- Display list of tables -->
-<h2>Tables in Database '<?php echo htmlspecialchars($database); ?>':</h2>
-<ul>
-    <?php foreach ($tables as $table) : ?>
-        <li><?php echo htmlspecialchars($table); ?></li>
-    <?php endforeach; ?>
-</ul>
+<h2>Select Table to View or Insert Data</h2>
+<form method="GET">
+    <label for="table">Choose a Table:</label>
+    <select name="table" id="table" onchange="this.form.submit()">
+        <option value="">-- Select Table --</option>
+        <?php foreach ($tables as $table) : ?>
+            <option value="<?php echo htmlspecialchars($table); ?>" <?php if (isset($_GET['table']) && $_GET['table'] == $table) echo 'selected'; ?>>
+                <?php echo htmlspecialchars($table); ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+</form>
+
+<?php if (isset($_GET['table'])) : ?>
+    <h2>Data in Table '<?php echo htmlspecialchars($_GET['table']); ?>'</h2>
+    <?php
+    $selectedTable = $_GET['table'];
+    $result = $conn->query("SELECT * FROM `$selectedTable`");
+    ?>
+    <table>
+        <thead>
+            <tr>
+                <?php foreach ($result->fetch_fields() as $field) : ?>
+                    <th><?php echo htmlspecialchars($field->name); ?></th>
+                <?php endforeach; ?>
+            </tr>
+        </thead>
+        <tbody>
+            <?php while ($row = $result->fetch_assoc()) : ?>
+                <tr>
+                    <?php foreach ($row as $value) : ?>
+                        <td><?php echo htmlspecialchars($value); ?></td>
+                    <?php endforeach; ?>
+                </tr>
+            <?php endwhile; ?>
+        </tbody>
+    </table>
+
+    <h2>Insert Data into '<?php echo htmlspecialchars($selectedTable); ?>'</h2>
+    <form method="POST">
+        <?php
+        $columns = $conn->query("SHOW COLUMNS FROM `$selectedTable`");
+        while ($column = $columns->fetch_assoc()) :
+        ?>
+            <label for="data[<?php echo $column['Field']; ?>]"><?php echo $column['Field']; ?>:</label>
+            <input type="text" name="data[<?php echo $column['Field']; ?>]" id="data[<?php echo $column['Field']; ?>]">
+        <?php endwhile; ?>
+        <input type="hidden" name="table" value="<?php echo htmlspecialchars($selectedTable); ?>">
+        <input type="submit" name="insert" value="Insert Data">
+    </form>
+<?php endif; ?>
 
 </body>
 </html>
