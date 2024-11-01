@@ -63,16 +63,17 @@ if (isset($_SESSION['host'], $_SESSION['username'], $_SESSION['database'])) {
     exit;
 }
 
-// Fungsi untuk membuat dump database
+// Fetch table names
+$tables = [];
+$result = $conn->query("SHOW TABLES");
+while ($row = $result->fetch_row()) {
+    $tables[] = $row[0];
+}
+
+// Fungsi untuk menampilkan dump database
 if (isset($_GET['dump'])) {
     header('Content-Type: application/sql');
     header('Content-Disposition: attachment; filename="' . $_SESSION['database'] . '_dump.sql"');
-
-    $tables = [];
-    $result = $conn->query("SHOW TABLES");
-    while ($row = $result->fetch_row()) {
-        $tables[] = $row[0];
-    }
 
     foreach ($tables as $table) {
         $createTable = $conn->query("SHOW CREATE TABLE `$table`")->fetch_row()[1];
@@ -88,7 +89,7 @@ if (isset($_GET['dump'])) {
     exit;
 }
 
-// Proses eksekusi query
+// Proses eksekusi query jika disediakan
 $queryResult = null;
 if (isset($_POST['query']) && !empty($_POST['query'])) {
     $query = $_POST['query'];
@@ -105,13 +106,6 @@ if (isset($_POST['insert']) && isset($_POST['table']) && isset($_POST['data'])) 
     $values = implode("', '", array_map([$conn, 'real_escape_string'], array_values($_POST['data'])));
     $insertQuery = "INSERT INTO `$table` ($columns) VALUES ('$values')";
     $conn->query($insertQuery);
-}
-
-// Fetch table names
-$tables = [];
-$result = $conn->query("SHOW TABLES");
-while ($row = $result->fetch_row()) {
-    $tables[] = $row[0];
 }
 ?>
 
@@ -130,7 +124,7 @@ while ($row = $result->fetch_row()) {
 </head>
 <body>
 
-<h1>Simple MySQL Manager</h1>
+<h1>MySQL Manager</h1>
 <p><a href="?logout=true">Logout</a> | <a href="?dump=true">Download Database Dump</a></p>
 
 <!-- Form SQL Query -->
