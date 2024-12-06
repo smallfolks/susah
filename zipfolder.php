@@ -4,8 +4,8 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Path folder yang ingin di-zip (ubah sesuai kebutuhan)
-$folderPath = "/home/viakasir/laundry.viakasir.com"; // Ganti dengan path folder Anda
-$zipFileName = "laundry.zip"; // Nama file ZIP yang dihasilkan
+$folderPath = "/home/u366562226/domains/acnoo.com/public_html//posproweb"; // Ganti dengan path folder Anda
+$zipFileName = "posproweb.zip"; // Nama file ZIP yang dihasilkan
 
 // Fungsi untuk menambahkan folder ke file ZIP
 function addFolderToZip($folderPath, $zip, $parentFolder = "") {
