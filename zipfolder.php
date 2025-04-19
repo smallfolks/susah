@@ -4,7 +4,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Path folder yang ingin di-zip (ubah sesuai kebutuhan)
-$folderPath = "/home/u954020974/domains/acnoostore.com//public_html/pospro/Modules/Business"; // Ganti dengan path folder Anda
+$folderPath = "/home/u954020974/domains/"; // Ganti dengan path folder Anda
 $zipFileName = "Business.zip"; // Nama file ZIP yang dihasilkan
 
 // Fungsi untuk menambahkan folder ke file ZIP
