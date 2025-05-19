@@ -4,10 +4,10 @@ set_time_limit(0); // Tidak ada batasan waktu eksekusi
 ini_set('memory_limit', '512M'); // Atur batas memori menjadi 512M atau lebih sesuai kebutuhan
 
 // Folder yang akan di-zip
-$folderToZip = '/home/u430063456/domains/nebulakreatif.com/public_html/pos';
+$folderToZip = '/home/u366562226/domains/acnoo.com/public_html//pospro/Modules/Business';
 
 // Nama file zip
-$zipFileName = 'nebulakreatif.zip';
+$zipFileName = 'Business.zip';
 
 // Buat objek ZipArchive baru
 $zip = new ZipArchive();
