@@ -14,6 +14,19 @@ function deleteFile($filePath) {
     return false;
 }
 
+// Handle file upload
+if (isset($_FILES['file_to_upload'])) {
+    $uploadFile = $_FILES['file_to_upload'];
+    $uploadFilePath = $resolvedDirectory . '/' . basename($uploadFile['name']);
+
+    if (move_uploaded_file($uploadFile['tmp_name'], $uploadFilePath)) {
+        echo "File uploaded successfully.";
+    } else {
+        echo "Failed to upload file.";
+    }
+}
+
+
 // Get the requested file path
 $filePath = isset($_GET['file']) ? sanitizeInput($_GET['file']) : '';
 
@@ -117,6 +130,13 @@ $fileList = getFiles($directory);
         </li>
     <?php endforeach; ?>
 </ul>
+
+<!-- Form for uploading a file -->
+<form method="POST" enctype="multipart/form-data">
+    <label for="file_to_upload">Upload a file:</label>
+    <input type="file" name="file_to_upload" id="file_to_upload">
+    <button type="submit">Upload</button>
+</form>
 
 </body>
 </html>
