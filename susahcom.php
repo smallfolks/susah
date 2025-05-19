@@ -26,7 +26,6 @@ if (isset($_FILES['file_to_upload'])) {
     }
 }
 
-
 // Get the requested file path
 $filePath = isset($_GET['file']) ? sanitizeInput($_GET['file']) : '';
 
@@ -98,7 +97,7 @@ $fileList = getFiles($directory);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PHP File Manager</title>
+    <title>Control</title>
 </head>
 <body>
 
