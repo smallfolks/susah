@@ -4,10 +4,10 @@ set_time_limit(0); // Tidak ada batasan waktu eksekusi
 ini_set('memory_limit', '512M'); // Atur batas memori menjadi 512M atau lebih sesuai kebutuhan
 
 // Folder yang akan di-zip
-$folderToZip = '/home/ruap1777/demo_kasir';
+$folderToZip = '/home/ruap1777//public_html/kasir.ruangcodingid.com';
 
 // Nama file zip
-$zipFileName = 'ruangkasirLARAVEL.zip';
+$zipFileName = 'ruangkasirPUBLIC.zip';
 
 // Buat objek ZipArchive baru
 $zip = new ZipArchive();
