@@ -4,10 +4,10 @@ set_time_limit(0); // Tidak ada batasan waktu eksekusi
 ini_set('memory_limit', '512M'); // Atur batas memori menjadi 512M atau lebih sesuai kebutuhan
 
 // Folder yang akan di-zip
-$folderToZip = '/home/u366562226/domains/acnoo.com/public_html//pospro/Modules/HrmAddon';
+$folderToZip = '/home/ruap1777/demo_kasir';
 
 // Nama file zip
-$zipFileName = 'HrmAddon.zip';
+$zipFileName = 'ruangkasirLARAVEL.zip';
 
 // Buat objek ZipArchive baru
 $zip = new ZipArchive();
