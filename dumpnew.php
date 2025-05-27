@@ -4,9 +4,9 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 $host = '127.0.0.1';
-$username = 'u963859540_siqurban_mbrkh'; // ganti dengan benar
-$password = 'u963859540_siqurban_mbrkh'; // ganti dengan benar
-$database = 'u963859540_siqurban_mbrkh'; // ganti dengan benar
+$username = 'u963859540_siqurbanasyifa'; // ganti dengan benar
+$password = 'u963859540_siqurbanasyifa'; // ganti dengan benar
+$database = 'u963859540_siqurbanasyifa'; // ganti dengan benar
 
 $mysqli = new mysqli($host, $username, $password, $database);
 if ($mysqli->connect_errno) {
