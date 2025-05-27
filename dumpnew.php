@@ -1,9 +1,9 @@
 <?php
 // Konfigurasi database
 $host = "127.0.0.1";
-$user = "u963859540_siqurban";
-$pass = "u963859540_siqurban";
-$db   = "u963859540_siqurban";
+$user = "u963859540_siqurban_mbrkh";
+$pass = "u963859540_siqurban_mbrkh";
+$db   = "u963859540_siqurban_mbrkh";
 
 // Koneksi
 $conn = new mysqli($host, $user, $pass, $db);
