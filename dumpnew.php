@@ -1,48 +1,25 @@
 <?php
-// Konfigurasi database
-$host = "127.0.0.1";
-$user = "u963859540_siqurban_mbrkh";
-$pass = "u963859540_siqurban_mbrkh";
-$db   = "u963859540_siqurban_mbrkh";
+$mysqli = new mysqli("localhost", "u963859540_siqurban_mbrkh", "u963859540_siqurban_mbrkh", "u963859540_siqurban_mbrkh");
+$dir = "backup/";
+if (!is_dir($dir)) mkdir($dir);
 
-// Koneksi
-$conn = new mysqli($host, $user, $pass, $db);
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
-}
+$filename = $dir . "backup_" . date("Ymd_His") . ".sql";
+$content = "";
+$res = $mysqli->query("SHOW TABLES");
+while ($r = $res->fetch_array()) {
+    $table = $r[0];
+    $res2 = $mysqli->query("SHOW CREATE TABLE `$table`");
+    $row2 = $res2->fetch_assoc();
+    $content .= "-- Tabel $table\n" . $row2['Create Table'] . ";\n\n";
 
-// Nama file yang akan diunduh
-$filename = "backup_{$db}_" . date("Ymd_His") . ".sql";
-
-// Header agar langsung download
-header("Content-Type: application/sql");
-header("Content-Disposition: attachment; filename=\"$filename\"");
-
-$output = "";
-
-// Backup struktur dan data
-$tables = [];
-$res = $conn->query("SHOW TABLES");
-while ($row = $res->fetch_array()) {
-    $tables[] = $row[0];
-}
-
-foreach ($tables as $table) {
-    // Struktur tabel
-    $res = $conn->query("SHOW CREATE TABLE `$table`");
-    $row = $res->fetch_assoc();
-    $output .= "-- Struktur tabel `$table`\n";
-    $output .= $row['Create Table'] . ";\n\n";
-
-    // Data tabel
-    $res = $conn->query("SELECT * FROM `$table`");
-    while ($r = $res->fetch_assoc()) {
-        $vals = array_map([$conn, 'real_escape_string'], array_values($r));
-        $vals = array_map(fn($v) => "'" . $v . "'", $vals);
-        $output .= "INSERT INTO `$table` VALUES (" . implode(", ", $vals) . ");\n";
+    $res3 = $mysqli->query("SELECT * FROM `$table`");
+    while ($row3 = $res3->fetch_assoc()) {
+        $vals = array_map([$mysqli, 'real_escape_string'], array_values($row3));
+        $vals = array_map(fn($v) => "'$v'", $vals);
+        $content .= "INSERT INTO `$table` VALUES (" . implode(",", $vals) . ");\n";
     }
-    $output .= "\n\n";
+    $content .= "\n\n";
 }
-
-echo $output;
-exit;
+file_put_contents($filename, $content);
+echo "Backup selesai: <a href='$filename'>$filename</a>";
+?>
