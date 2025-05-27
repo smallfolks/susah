@@ -2,7 +2,7 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-$mysqli = new mysqli("localhost", "u963859540_siqurban_mbrkh", "u963859540_siqurban_mbrkh", "u963859540_siqurban_mbrkh");
+$mysqli = new mysqli("127.0.0.1", "u963859540_siqurban_mbrkh", "u963859540_siqurban_mbrkh", "u963859540_siqurban_mbrkh");
 if ($mysqli->connect_error) die("Koneksi gagal: " . $mysqli->connect_error);
 
 $table = 'nama_tabelmu'; // Ganti dengan nama tabel nyata
