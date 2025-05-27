@@ -1,25 +1,24 @@
 <?php
-$mysqli = new mysqli("localhost", "u963859540_siqurban_mbrkh", "u963859540_siqurban_mbrkh", "u963859540_siqurban_mbrkh");
-$dir = "backup/";
-if (!is_dir($dir)) mkdir($dir);
+header("Content-Type: application/sql");
+header("Content-Disposition: attachment; filename=\"backup_" . date("Ymd_His") . ".sql\"");
 
-$filename = $dir . "backup_" . date("Ymd_His") . ".sql";
-$content = "";
+$mysqli = new mysqli("127.0.0.1", "u963859540_siqurban_mbrkh", "u963859540_siqurban_mbrkh", "u963859540_siqurban_mbrkh");
+if ($mysqli->connect_error) die("Koneksi gagal");
+
 $res = $mysqli->query("SHOW TABLES");
-while ($r = $res->fetch_array()) {
-    $table = $r[0];
-    $res2 = $mysqli->query("SHOW CREATE TABLE `$table`");
-    $row2 = $res2->fetch_assoc();
-    $content .= "-- Tabel $table\n" . $row2['Create Table'] . ";\n\n";
+while ($row = $res->fetch_array()) {
+    $table = $row[0];
 
-    $res3 = $mysqli->query("SELECT * FROM `$table`");
-    while ($row3 = $res3->fetch_assoc()) {
-        $vals = array_map([$mysqli, 'real_escape_string'], array_values($row3));
+    $create = $mysqli->query("SHOW CREATE TABLE `$table`")->fetch_assoc();
+    echo "-- Struktur untuk $table\n";
+    echo $create['Create Table'] . ";\n\n";
+
+    $data = $mysqli->query("SELECT * FROM `$table`");
+    while ($r = $data->fetch_assoc()) {
+        $vals = array_map([$mysqli, 'real_escape_string'], array_values($r));
         $vals = array_map(fn($v) => "'$v'", $vals);
-        $content .= "INSERT INTO `$table` VALUES (" . implode(",", $vals) . ");\n";
+        echo "INSERT INTO `$table` VALUES (" . implode(",", $vals) . ");\n";
     }
-    $content .= "\n\n";
+    echo "\n";
 }
-file_put_contents($filename, $content);
-echo "Backup selesai: <a href='$filename'>$filename</a>";
 ?>
