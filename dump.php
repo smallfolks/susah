@@ -1,7 +1,7 @@
 <?php
 
 // Database connection parameters
-$host = 'localhost';
+$host = '127.0.0.1';
 $username = 'u963859540_siqurban';
 $password = 'u963859540_siqurban';
 $database = 'u963859540_siqurban';
